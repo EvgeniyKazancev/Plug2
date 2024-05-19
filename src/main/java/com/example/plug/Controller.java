@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class Controller {
-    String url = "jdbc:postgresql://192.168.1.124:5432/postgres";
+    String url = "jdbc:postgresql://192.168.24.200:5432/postgres";
     String username = "postgres";
     String password = "postgres";
     Connection connection;
