@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class Controller {
-    String url = "jdbc:postgresql://192.168.24.200:5432/postgres";
+    String url = "jdbc:postgresql://192.168.1.124:5432/postgres";
     String username = "postgres";
     String password = "postgres";
     Connection connection;
@@ -54,7 +54,7 @@ public class Controller {
 
 
     @PostMapping("/login")
-    public int postLogin(@Valid @RequestBody Map<String, String> userNew ) throws SQLException {
+    public int postLogin(@Valid @RequestBody Map<String, String> userNew )  {
 
         if (userNew.size() == 3 && userNew.containsKey("login") && userNew.containsKey("password") && userNew.containsKey("email")) {
 
