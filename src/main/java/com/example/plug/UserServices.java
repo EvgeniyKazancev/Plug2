@@ -33,7 +33,7 @@ public class UserServices {
                 String email = resultSet.getString("email");
                 Timestamp date = resultSet.getTimestamp("date");
                 return new Users(login, password, email, date);
-            }else {
+            } else {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -46,29 +46,24 @@ public class UserServices {
 
 
     @PostMapping("/login")
-    public int postLogin(@Valid @RequestBody Map<String, String> userNew )  {
+    public int postLogin(@Valid @RequestBody Map<String, String> userNew) {
 
-        if (userNew.size() == 3 && userNew.containsKey("login") && userNew.containsKey("password") && userNew.containsKey("email")) {
+        try (Connection connection2 = DriverManager.getConnection(url, username, password)) {
 
-            try (Connection connection2 = DriverManager.getConnection(url, username, password)) {
+            PreparedStatement psUsers = connection2.prepareStatement("INSERT INTO users(login, password, date) VALUES (?,?,?);");
+            PreparedStatement psEmail = connection2.prepareStatement("INSERT INTO user_emails(login, email) VALUES (?,?)");
 
-                PreparedStatement psUsers = connection2.prepareStatement("INSERT INTO users(login, password, date) VALUES (?,?,?);");
-                PreparedStatement psEmail = connection2.prepareStatement("INSERT INTO user_emails(login, email) VALUES (?,?)");
+            psUsers.setString(1, userNew.get("login"));
+            psUsers.setString(2, userNew.get("password"));
+            psUsers.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
 
-                psUsers.setString(1, userNew.get("login"));
-                psUsers.setString(2, userNew.get("password"));
-                psUsers.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            psEmail.setString(1, userNew.get("login"));
+            psEmail.setString(2, userNew.get("email"));
 
-                psEmail.setString(1, userNew.get("login"));
-                psEmail.setString(2, userNew.get("email"));
+            return psUsers.executeUpdate() + psEmail.executeUpdate();
 
-                return psUsers.executeUpdate() + psEmail.executeUpdate();
-
-            }catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

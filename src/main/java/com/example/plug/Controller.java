@@ -19,12 +19,16 @@ public class Controller {
 
     @GetMapping("/date")
     public Users getUser(@RequestParam String login) throws SQLException {
-      return userService.getUser(login);
+        return userService.getUser(login);
     }
 
     @PostMapping("/login")
-    public int postLogin(@Valid @RequestBody Map<String, String> userNew )  {
-     return userService.postLogin(userNew);
+    public int postLogin(@Valid @RequestBody Map<String, String> userNew) {
+        if (userNew.size() == 3 && userNew.containsKey("login") && userNew.containsKey("password") && userNew.containsKey("email")) {
+            return userService.postLogin(userNew);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
 
